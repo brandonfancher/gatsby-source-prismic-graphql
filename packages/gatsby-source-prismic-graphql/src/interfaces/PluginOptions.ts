@@ -6,7 +6,7 @@ export interface Page {
   langs?: string[];
   sortBy?: string;
   filter?: Function;
-  addToQuery?: string;
+  addToNodeQuery?: string;
 }
 
 export interface PluginOptions {

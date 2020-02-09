@@ -109,6 +109,7 @@ function createDocumentPages(
   edges.forEach(({ cursor, node }: any, index: number) => {
     const previousNode = edges[index - 1] && edges[index - 1].node;
     const nextNode = edges[index + 1] && edges[index + 1].node;
+    const { _meta, ...restNode } = node;
 
     // ...and create the page
     createPage({
@@ -116,8 +117,8 @@ function createDocumentPages(
       component: page.component,
       context: {
         rootQuery: getRootQuery(page.component),
-        ...node,
-        ...node._meta,
+        ...restNode,
+        ..._meta,
         cursor,
         paginationPreviousMeta: previousNode ? previousNode._meta : null,
         paginationPreviousUid: previousNode ? previousNode._meta.uid : '',
@@ -149,7 +150,6 @@ const getDocumentsQuery = ({
         sortBy: $sortBy
         lang: $lang
       ) {
-        ${querySupplement || ''}
         totalCount
         pageInfo {
           hasNextPage
@@ -158,6 +158,7 @@ const getDocumentsQuery = ({
         edges {
           cursor
           node {
+            ${querySupplement || ''}
             _meta {
               id
               lang
@@ -197,7 +198,7 @@ exports.createPages = async ({ graphql, actions: { createPage } }: any, options:
     const query: string = getDocumentsQuery({
       documentType,
       sortType,
-      querySupplement: page.addToQuery,
+      querySupplement: page.addToNodeQuery,
     });
     const { data, errors } = await graphql(query, {
       after: endCursor,
