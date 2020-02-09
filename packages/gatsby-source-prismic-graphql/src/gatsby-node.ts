@@ -134,9 +134,11 @@ function createDocumentPages(
 const getDocumentsQuery = ({
   documentType,
   sortType,
+  querySupplement,
 }: {
   documentType: string;
   sortType: string;
+  querySupplement?: string;
 }): string => `
   query AllPagesQuery ($after: String, $lang: String, $sortBy: ${sortType}) {
     prismic {
@@ -146,6 +148,7 @@ const getDocumentsQuery = ({
         sortBy: $sortBy
         lang: $lang
       ) {
+        ${querySupplement || ''}
         totalCount
         pageInfo {
           hasNextPage
@@ -190,7 +193,11 @@ exports.createPages = async ({ graphql, actions: { createPage } }: any, options:
     // Prepare and execute query
     const documentType: string = `all${page.type}s`;
     const sortType: string = `PRISMIC_Sort${page.type}y`;
-    const query: string = getDocumentsQuery({ documentType, sortType });
+    const query: string = getDocumentsQuery({
+      documentType,
+      sortType,
+      querySupplement: page.addToQuery,
+    });
     const { data, errors } = await graphql(query, {
       after: endCursor,
       lang: lang || null,
