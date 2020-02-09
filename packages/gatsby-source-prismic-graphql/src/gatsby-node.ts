@@ -116,6 +116,7 @@ function createDocumentPages(
       component: page.component,
       context: {
         rootQuery: getRootQuery(page.component),
+        ...node,
         ...node._meta,
         cursor,
         paginationPreviousMeta: previousNode ? previousNode._meta : null,
